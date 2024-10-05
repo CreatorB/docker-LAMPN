@@ -3,6 +3,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
+    vim \
     curl \
     wget \
     git \
@@ -16,7 +17,6 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     unzip \
-    vim \
     apache2 \
     mysql-server \
     mysql-client
@@ -69,6 +69,12 @@ COPY my.cnf /etc/mysql/my.cnf
 
 RUN service mysql start && \
     mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
+
+RUN mkdir -p /var/log/php
+RUN echo "error_log = /var/log/php/php_errors.log" >> /etc/php/8.2/apache2/php.ini
+RUN echo "log_errors = On" >> /etc/php/8.2/apache2/php.ini
+RUN echo "error_log = /var/log/php/php_errors.log" >> /etc/php/8.2/cli/php.ini
+RUN echo "log_errors = On" >> /etc/php/8.2/cli/php.ini
 
 WORKDIR /var/www/html
 
