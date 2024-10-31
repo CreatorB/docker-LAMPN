@@ -76,6 +76,29 @@ Docker LAMPN is a Dockerized image that provides a complete development environm
 - The MySQL configuration file is located at `/etc/mysql/my.cnf`.
 - The default configuration allows remote access to the MySQL server.
 
+if you need login mysql @ host machine you need to set up like below :
+
+1. **Directly Modify MySQL User Table**:
+   You can update the `mysql.user` table to allow `root` access without a password from any host (`%`). Here’s how:
+
+   ```sql
+   UPDATE mysql.user SET host = '%' WHERE user = 'root';
+   FLUSH PRIVILEGES;
+   ```
+
+2. **Set Grant Privileges Separately**:
+   If updating the host setting alone doesn’t work, try running:
+
+   ```sql
+   GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+   FLUSH PRIVILEGES;
+   ```
+
+3. **Verify Configuration**:
+   Confirm that your Docker configuration (`my.cnf` or `mysqld.cnf`) doesn’t restrict access with settings like `skip-networking` or `bind-address`, which should ideally be set to `0.0.0.0` to allow external connections. 
+
+After these changes, restart your MySQL container and try connecting again from DBeaver on port `8005`.
+
 ## Example
 
 For example, if you want to run the Tallstack Employees project: [Tallstack Employees](https://github.com/prettyblueberry/tallstack-employees).
